@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DAA Lab Programs</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f7f9fb;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 32px 28px 24px 28px;
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 2rem;
+      color: #222;
+    }
+    select {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-bottom: 24px;
+      background: #f5f7fa;
+    }
+    .code-block {
+      background: #f4f4f4;
+      border-radius: 8px;
+      padding: 18px;
+      font-family: 'Fira Mono', 'Consolas', monospace;
+      font-size: 1rem;
+      white-space: pre;
+      overflow-x: auto;
+      min-height: 200px;
+      margin-bottom: 16px;
+      position: relative;
+      color: #222;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #ffe082;
+      border: none;
+      border-radius: 5px;
+      padding: 6px 16px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .copy-btn:hover {
+      background: #ffd54f;
+    }
+    @media (max-width: 600px) {
+      .container { padding: 12px; }
+      .code-block { font-size: 0.95rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>DAA Lab Programs</h1>
+    <select id="programSelect">
+      <option value="bfs">BFS</option>
+      <option value="toposort">Topological Sort</option>
+      <option value="assignment">Assignment Problem</option>
+      <option value="heapsort">Heap Sort</option>
+      <option value="hoorspool">Horspool Algorithm</option>
+      <option value="knapsack">Knapsack</option>
+      <option value="floyd">Floyd Warshall</option>
+      <option value="elementunique">Element Uniqueness</option>
+      <option value="mergesort">Merge Sort</option>
+      <option value="boyermoore">Boyer Moore</option>
+      <option value="tsp">TSP</option>
+      <option value="subsetsum">Sum of Subset</option>
+      <option value="nqueen">N-Queen</option>
+      <option value="prim">Prim's Algorithm</option>
+      <option value="dijkstra">Dijkstra's Algorithm</option>
+      <option value="quicksort">Quick Sort</option>
+    </select>
+    <div class="code-block" id="codeBlock" style="position:relative;">
+      <button class="copy-btn" id="copyBtn">Copy</button>
+      <code id="codeContent"></code>
+    </div>
+  </div>
+  <script>
+    const codes = {
+     
+        bfs: `
+#include <stdio.h>
+
+int q[100], front = 0, rear = -1, visited[10];
+int a[5][5] = {
+    {0,1,1,0,0},
+    {1,0,0,1,0},
+    {1,0,0,0,1},
+    {0,1,0,0,1},
+    {0,0,1,1,0}
+};
+int n = 5;
+
+void bfs(int v) {
+    q[++rear] = v;
+    visited[v] = 1;
+    printf("BFS from vertex %d:\n", v);
+    while (front <= rear) {
+        v = q[front++];
+        printf("%d ", v);
+        for (int i = 0; i < n; i++)
+            if (a[v][i] && !visited[i]) {
+                q[++rear] = i;
+                visited[i] = 1;
+            }
+    }
+    printf("\n");
+}
+
+int main() {
+    bfs(0);
+    return 0;
+}
+`,
+      dijkstra: `
+#include <stdio.h>
+#define INF 9999
+
+void dijkstra(int g[10][10], int n, int s) {
+    int d[10], vis[10] = {0};
+    for(int i = 0; i < n; i++) d[i] = INF;
+    d[s] = 0;
+
+    for(int c = 0; c < n; c++) {
+        int u = -1;
+        for(int i = 0; i < n; i++)
+            if(!vis[i] && (u == -1 || d[i] < d[u]))
+                u = i;
+
+        vis[u] = 1;
+
+        for(int v = 0; v < n; v++)
+            if(g[u][v] && d[u] + g[u][v] < d[v])
+                d[v] = d[u] + g[u][v];
+    }
+
+    // Print shortest distances
+    printf("Vertex\tDistance from Source %d\n", s);
+    for(int i = 0; i < n; i++)
+        printf("%d\t%d\n", i, d[i]);
+}
+
+int main() {
+    int n = 5;
+    int graph[10][10] = {
+        {0, 10, 0, 30, 100},
+        {10, 0, 50, 0, 0},
+        {0, 50, 0, 20, 10},
+        {30, 0, 20, 0, 60},
+        {100, 0, 10, 60, 0}
+    };
+    int source = 0;
+    dijkstra(graph, n, source);
+    return 0;
+}
+
+`,
+      toposort: `
+#include <stdio.h>
+
+int visited[10], stack[10], top = -1;
+int adj[6][6] = {
+    {0,1,1,0,0,0},
+    {0,0,0,1,0,0},
+    {0,0,0,1,1,0},
+    {0,0,0,0,0,1},
+    {0,0,0,0,0,1},
+    {0,0,0,0,0,0}
+};
+int n = 6;
+
+void dfs(int v) {
+    visited[v] = 1;
+    for (int i = 0; i < n; i++)
+        if (adj[v][i] && !visited[i])
+            dfs(i);
+    stack[++top] = v;
+}
+
+int main() {
+    for (int i = 0; i < n; i++)
+        if (!visited[i])
+            dfs(i);
+
+    printf("Topological Sort: ");
+    while (top >= 0)
+        printf("%d ", stack[top--]);
+    return 0;
+}
+`,
+      assignment: `
+#include <stdio.h>
+
+int minCost = 9999, n = 4;
+int cost[10][10] = {
+    {9, 2, 7, 8},
+    {6, 4, 3, 7},
+    {5, 8, 1, 8},
+    {7, 6, 9, 4}
+};
+int used[10], assignJob[10];
+
+void assign(int job, int currCost) {
+    if (job == n) {
+        if (currCost < minCost) {
+            minCost = currCost;
+            printf("Minimum Cost: %d\nAssignments:\n", minCost);
+            for (int i = 0; i < n; i++) printf("Job %d -> Worker %d\n", i, assignJob[i]);
+        }
+        return;
+    }
+    for (int i = 0; i < n; i++) {
+        if (!used[i]) {
+            used[i] = 1;
+            assignJob[job] = i;
+            assign(job + 1, currCost + cost[i][job]);
+            used[i] = 0;
+        }
+    }
+}
+
+int main() {
+    assign(0, 0);
+    return 0;
+}
+`,
+      heapsort: `
+#include <stdio.h>
+
+void heapify(int arr[], int n, int i) {
+    int largest = i, l = 2*i + 1, r = 2*i + 2;
+    if(l < n && arr[l] > arr[largest]) largest = l;
+    if(r < n && arr[r] > arr[largest]) largest = r;
+    if(largest != i) {
+        int t = arr[i]; arr[i] = arr[largest]; arr[largest] = t;
+        heapify(arr, n, largest);
+    }
+}
+
+void heapSort(int arr[], int n) {
+    for(int i = n/2 - 1; i >= 0; i--) heapify(arr, n, i);
+    for(int i = n-1; i >= 0; i--) {
+        int t = arr[0]; arr[0] = arr[i]; arr[i] = t;
+        heapify(arr, i, 0);
+    }
+}
+
+int main() {
+    int arr[] = {4, 10, 3, 5, 1}, n = 5;
+    heapSort(arr, n);
+    printf("Sorted array: ");
+    for(int i = 0; i < n; i++) printf("%d ", arr[i]);
+    return 0;
+}
+`,
+      hoorspool: `
+#include <stdio.h>
+#include <string.h>
+
+#define MAX 256
+
+void shiftTable(char p[], int m, int table[]) {
+    for(int i = 0; i < MAX; i++) table[i] = m;
+    for(int i = 0; i < m-1; i++) table[(int)p[i]] = m - i - 1;
+}
+
+int horspool(char text[], char pat[]) {
+    int n = strlen(text), m = strlen(pat);
+    int table[MAX]; shiftTable(pat, m, table);
+    int i = m - 1;
+    while(i < n) {
+        int k = 0;
+        while(k < m && pat[m - 1 - k] == text[i - k]) k++;
+        if(k == m) return i - m + 1;
+        i += table[(int)text[i]];
+    }
+    return -1;
+}
+
+int main() {
+    char text[] = "abacaabadcabacabaabb", pat[] = "abacab";
+    int pos = horspool(text, pat);
+    if(pos >= 0) printf("Pattern found at index %d\n", pos);
+    else printf("Pattern not found\n");
+    return 0;
+}
+`,
+      knapsack: `
+#include <stdio.h>
+
+int max(int a, int b) { return (a > b) ? a : b; }
+
+int knapsack(int W, int wt[], int val[], int n, int dp[][100]) {
+    if(n == 0 || W == 0) return 0;
+    if(dp[n][W] != -1) return dp[n][W];
+
+    if(wt[n-1] <= W)
+        return dp[n][W] = max(
+            val[n-1] + knapsack(W - wt[n-1], wt, val, n-1, dp),
+            knapsack(W, wt, val, n-1, dp)
+        );
+    else
+        return dp[n][W] = knapsack(W, wt, val, n-1, dp);
+}
+
+int main() {
+    int val[] = {60, 100, 120};
+    int wt[] = {10, 20, 30};
+    int W = 50, n = 3;
+    int dp[100][100];
+    for(int i = 0; i <= n; i++)
+        for(int j = 0; j <= W; j++)
+            dp[i][j] = -1;
+
+    printf("Maximum value in Knapsack = %d\n", knapsack(W, wt, val, n, dp));
+    return 0;
+}
+`,
+      floyd: `
+#include <stdio.h>
+
+int n = 4;
+int warshallGraph[10][10] = {
+    {1, 1, 0, 0},
+    {0, 1, 1, 0},
+    {0, 0, 1, 1},
+    {0, 0, 0, 1}
+};
+
+int floydGraph[10][10] = {
+    {0, 5, 9999, 10},
+    {9999, 0, 3, 9999},
+    {9999, 9999, 0, 1},
+    {9999, 9999, 9999, 0}
+};
+
+void warshall(int a[10][10], int n) {
+    for(int k=0; k<n; k++)
+        for(int i=0; i<n; i++)
+            for(int j=0; j<n; j++)
+                a[i][j] = a[i][j] || (a[i][k] && a[k][j]);
+}
+
+void floyd(int d[10][10], int n) {
+    for(int k=0; k<n; k++)
+        for(int i=0; i<n; i++)
+            for(int j=0; j<n; j++)
+                if(d[i][k] + d[k][j] < d[i][j])
+                    d[i][j] = d[i][k] + d[k][j];
+}
+
+void printMatrix(int m[10][10], int n) {
+    for(int i=0; i<n; i++) {
+        for(int j=0; j<n; j++)
+            printf("%4d ", m[i][j]);
+        printf("\n");
+    }
+}
+
+int main() {
+
+    warshall(warshallGraph, n);
+    printf("\nWarshall transitive closure:\n");
+    printMatrix(warshallGraph, n);
+
+    floyd(floydGraph, n);
+    printf("\nFloyd shortest paths:\n");
+    printMatrix(floydGraph, n);
+
+    return 0;
+}
+`,
+      elementunique: `
+#include <stdio.h>
+#include <stdlib.h>
+
+int cmp(const void* a, const void* b) {
+    return (*(int*)a - *(int*)b);
+}
+
+int hasDuplicates(int arr[], int n) {
+    qsort(arr, n, sizeof(int), cmp);
+    for(int i = 1; i < n; i++)
+        if(arr[i] == arr[i-1]) return 1;
+    return 0;
+}
+
+int main() {
+    int arr[] = {4, 5, 2, 3, 2}, n = 5;
+    if(hasDuplicates(arr, n))
+        printf("Duplicates exist\n");
+    else
+        printf("All elements are unique\n");
+    return 0;
+}
+`,
+      mergesort: `
+#include <stdio.h>
+
+void merge(int a[], int l, int m, int r) {
+    int i = l, j = m+1, k = 0, b[100];
+    while(i <= m && j <= r) b[k++] = (a[i] < a[j]) ? a[i++] : a[j++];
+    while(i <= m) b[k++] = a[i++];
+    while(j <= r) b[k++] = a[j++];
+    for(i = l, k = 0; i <= r; i++) a[i] = b[k++];
+}
+void mergeSort(int a[], int l, int r) {
+    if(l < r) {
+        int m = (l + r)/2;
+        mergeSort(a, l, m); mergeSort(a, m+1, r); merge(a, l, m, r);
+    }
+}
+
+int main() {
+    int a[] = {12, 11, 13, 5, 6, 7}, n = 6;
+    mergeSort(a, 0, n-1);
+    printf("Sorted array: ");
+    for(int i = 0; i < n; i++) printf("%d ", a[i]);
+    return 0;
+}
+`,
+      boyermoore: `
+#include <stdio.h>
+#include <string.h>
+#define MAX 256
+
+void badCharHeuristic(char *str, int size, int badchar[]) {
+    for(int i = 0; i < MAX; i++) badchar[i] = -1;
+    for(int i = 0; i < size; i++) badchar[(int)str[i]] = i;
+}
+
+void search(char *txt, char *pat) {
+    int m = strlen(pat), n = strlen(txt);
+    int badchar[MAX];
+    badCharHeuristic(pat, m, badchar);
+    int s = 0;
+    while(s <= (n - m)) {
+        int j = m - 1;
+        while(j >= 0 && pat[j] == txt[s + j]) j--;
+        if(j < 0) {
+            printf("Pattern occurs at index %d\n", s);
+            s += (s + m < n) ? m - badchar[txt[s + m]] : 1;
+        }
+        else s += (j - badchar[txt[s + j]] > 1) ? j - badchar[txt[s + j]] : 1;
+    }
+}
+
+int main() {
+    char txt[] = "ABAAABCD", pat[] = "ABC";
+    search(txt, pat);
+    return 0;
+}
+`,
+      tsp: `
+#include <stdio.h>
+#define N 4
+#define INF 999
+
+int g[N][N] = {
+    {0, 10, 15, 20},
+    {10, 0, 35, 25},
+    {15, 35, 0, 30},
+    {20, 25, 30, 0}
+};
+
+int v[N] = {1}, min = INF, path[N], best[N];
+
+void tsp(int p, int c, int cost) {
+    path[c - 1] = p;
+    if (c == N) {
+        if (g[p][0] && cost + g[p][0] < min) {
+            min = cost + g[p][0];
+            for (int i = 0; i < N; i++) best[i] = path[i];
+        }
+        return;
+    }
+    for (int i = 0; i < N; i++)
+        if (!v[i] && g[p][i]) {
+            v[i] = 1;
+            tsp(i, c + 1, cost + g[p][i]);
+            v[i] = 0;
+        }
+}
+
+int main() {
+    tsp(0, 1, 0);
+    printf("Cost: %d\nPath: ", min);
+    for (int i = 0; i < N; i++) printf("%d → ", best[i]);
+    printf("0\n");
+    return 0;
+}
+`,
+      subsetsum: `#include <stdio.h>
+
+int subsetSum(int arr[], int n, int sum) {
+    if(sum == 0) return 1;
+    if(n == 0) return 0;
+    if(arr[n-1] > sum)
+        return subsetSum(arr, n-1, sum);
+    return subsetSum(arr, n-1, sum) || subsetSum(arr, n-1, sum - arr[n-1]);
+}
+
+int main() {
+    int arr[] = {3, 34, 4, 12, 5, 2};
+    int sum = 9, n = 6;
+    if(subsetSum(arr, n, sum))
+        printf("Found a subset with given sum\n");
+    else
+        printf("No subset with given sum\n");
+    return 0;
+}
+`,
+      nqueen: `
+#include <stdio.h>
+#include <stdlib.h>
+
+int board[10], n = 4;
+
+int safe(int r, int c) {
+    for(int i = 0; i < r; i++)
+        if(board[i] == c || abs(board[i] - c) == r - i)
+            return 0;
+    return 1;
+}
+
+void printSolution() {
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j < n; j++)
+            printf("%d ", (board[i] == j) ? 1 : 0);
+        printf("\n");
+    }
+    printf("\n");
+}
+
+void solve(int r) {
+    if(r == n) {
+        printSolution();
+        return;
+    }
+    for(int c = 0; c < n; c++)
+        if(safe(r, c)) {
+            board[r] = c;
+            solve(r + 1);
+        }
+}
+
+int main() {
+    solve(0);
+    return 0;
+}
+`,
+      prim: `
+#include <stdio.h>
+
+int main() {
+    int n = 5, graph[5][5] = {
+        {0, 2, 0, 6, 0},
+        {2, 0, 3, 8, 5},
+        {0, 3, 0, 0, 7},
+        {6, 8, 0, 0, 9},
+        {0, 5, 7, 9, 0}
+    };
+    int vis[5] = {1, 0, 0, 0, 0}, total = 0;
+
+    for (int edges = 1; edges < n; edges++) {
+        int min = 9999, u = -1, from = -1;
+        for (int i = 0; i < n; i++)
+            if (vis[i])
+                for (int j = 0; j < n; j++)
+                    if (!vis[j] && graph[i][j] && graph[i][j] < min) {
+                        min = graph[i][j];
+                        u = j;
+                        from = i;
+                    }
+        vis[u] = 1;
+        total += min;
+        printf("%d - %d\n", from, u);
+    }
+    printf("Total cost = %d\n", total);
+    return 0;
+}
+`,
+      quicksort: `
+#include <stdio.h>
+
+void swap(int* a, int* b) { int t = *a; *a = *b; *b = t; }
+
+int partition(int arr[], int low, int high) {
+    int pivot = arr[high], i = low - 1;
+    for(int j = low; j < high; j++)
+        if(arr[j] < pivot) swap(&arr[++i], &arr[j]);
+    swap(&arr[i+1], &arr[high]);
+    return i+1;
+}
+
+void quickSort(int arr[], int low, int high) {
+    if(low < high) {
+        int pi = partition(arr, low, high);
+        quickSort(arr, low, pi-1); quickSort(arr, pi+1, high);
+    }
+}
+
+int main() {
+    int arr[] = {10, 7, 8, 9, 1, 5}, n = 6;
+    quickSort(arr, 0, n-1);
+    printf("Sorted array: ");
+    for(int i = 0; i < n; i++) printf("%d ", arr[i]);
+    return 0;
+}
+`
+    };
+    const select = document.getElementById('programSelect');
+    const codeContent = document.getElementById('codeContent');
+    const copyBtn = document.getElementById('copyBtn');
+
+    function updateCode() {
+      const val = select.value;
+      codeContent.textContent = codes[val] || '// No code available.';
+    }
+    select.addEventListener('change', updateCode);
+    updateCode();
+
+    copyBtn.addEventListener('click', function() {
+      const code = codeContent.textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => copyBtn.textContent = 'Copy', 1200);
+      });
+    });
+  </script>
+</body>
+</html> 
