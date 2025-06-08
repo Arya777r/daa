@@ -317,7 +317,6 @@ int main() {
     int W = 50, n = 3;
     int dp[100][100];
 
-    // Fill dp[][] table
     for(int i = 0; i <= n; i++) {
         for(int w = 0; w <= W; w++) {
             if(i == 0 || w == 0)
@@ -329,14 +328,13 @@ int main() {
         }
     }
 
-    printf("Maximum value in Knapsack = %d\n", dp[n][W]);
+    printf("Maximum value in Knapsack = %d\\n", dp[n][W]);
 
-    // Backtracking to find included items
-    printf("Items included:\n");
+    printf("Items included:\\n");
     int w = W;
     for(int i = n; i > 0 && w > 0; i--) {
         if(dp[i][w] != dp[i-1][w]) {
-            printf("Item %d \n", i);
+            printf("Item %d \\n", i);
             w -= wt[i-1];
         }
     }
